@@ -3,7 +3,7 @@
 @author: TangRen
 @time: 2019/12/28 17:31
 @file: user_serializers.py
-@desc: 用户
+@desc: 用户序列号
 
 """
 from shopping.models import UserTable
