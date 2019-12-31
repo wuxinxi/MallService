@@ -15,7 +15,9 @@ urlpatterns = [
     path('userCenter/getVerifyCode', sp.PhoneVerify.as_view()),
     path('userCenter/getMessage', sp.MessageInfo.as_view()),
     path('userCenter/getCardGoods', sp.CardGood.as_view()),
-    path('userCenter/addCardGoods', sp.AddCardGoods.as_view()),
+    path('userCenter/cardGoodsManage', sp.CardGoodsManager.as_view()),
     path('common/getCategoryList', sp.CategoryList.as_view()),
     path('common/getGoodsInfoList', sp.GoodInfoList.as_view()),
+    path('userCenter/getShipAddress', sp.ShipAddressList.as_view()),
+    path('userCenter/shipAddressManage', sp.ShipAddressManage.as_view()),
 ]

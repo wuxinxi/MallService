@@ -54,7 +54,7 @@ class CardGoods(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.goods_desc
+        return f'{self.id}-{self.goods_desc}'
 
 
 class Category(models.Model):
@@ -87,12 +87,28 @@ class GoodsBanner(models.Model):
         return ("轮播图%s" % self.id)
 
 
+class GoodsSku(models.Model):
+    """
+    商品属性表
+    """
+    goods_sku_title = models.CharField(max_length=45, verbose_name='商品属性标题')
+    goods_sku_content = models.CharField(max_length=255, verbose_name='商品属性内容')
+
+    class Meta:
+        verbose_name = '商品属性表'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.goods_sku_title
+
+
 class GoodsInfo(models.Model):
     """
     商品信息表
     """
     category = models.ForeignKey(Category, null=True, on_delete=models.CASCADE, verbose_name='商品分类')
     banner = models.ManyToManyField(GoodsBanner, verbose_name='轮播图')
+    sku = models.ManyToManyField(GoodsSku, verbose_name='商品属性')
     goods_desc = models.CharField(max_length=255, verbose_name='商品描述')
     goods_default_icon = models.CharField(max_length=255, null=True, blank=True, verbose_name='商品图片')
     goods_default_price = models.SmallIntegerField(verbose_name='商品默认单价')
@@ -109,22 +125,6 @@ class GoodsInfo(models.Model):
 
     def __str__(self):
         return f'{self.goods_desc}-{self.id}'
-
-
-class GoodsSku(models.Model):
-    """
-    商品属性表
-    """
-    goods_id = models.SmallIntegerField(verbose_name='商品ID', unique=True)
-    goods_sku_title = models.CharField(max_length=45, verbose_name='商品属性标题')
-    goods_sku_content = models.CharField(max_length=255, verbose_name='商品属性内容')
-
-    class Meta:
-        verbose_name = '商品属性表'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.goods_id
 
 
 class MessageInfo(models.Model):
@@ -211,7 +211,7 @@ class ShipAddress(models.Model):
     ship_user_name = models.CharField(max_length=45, verbose_name='签收名')
     ship_user_mobile = models.CharField(max_length=45, verbose_name='手机号码')
     ship_address = models.CharField(max_length=255, verbose_name='收货地址')
-    ship_is_default = models.SmallIntegerField(choices=isDefaultAddress, verbose_name='收货地址', default=1)
+    ship_is_default = models.SmallIntegerField(choices=isDefaultAddress, verbose_name='是否默认', default=1)
     userTable = models.ForeignKey(UserTable, null=True, on_delete=models.CASCADE, verbose_name='用户信息')
 
     class Meta:
@@ -219,4 +219,4 @@ class ShipAddress(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.ship_user_name
+        return f'{self.id}-{self.ship_user_name}'

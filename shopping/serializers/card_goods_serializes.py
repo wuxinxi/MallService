@@ -14,5 +14,5 @@ from rest_framework import serializers
 class CardGoodsSerializers(serializers.ModelSerializer):
     class Meta:
         model = CardGoods
-        exclude = ('id', 'userTable')
+        exclude = ('userTable',)
 
