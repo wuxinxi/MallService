@@ -31,8 +31,8 @@ class Register(APIView):
 
     def post(self, request, format=None):
         params = request.data
-        user_name = params.get('user_name')
-        user_pwd = params.get('user_pwd')
+        user_name = parse.unquote(params.get('user_name'))
+        user_pwd = parse.unquote(params.get('user_pwd'))
         user_mobile = params.get('user_mobile')
 
         if user_name is None or user_pwd is None or user_mobile is None:
@@ -53,6 +53,12 @@ class Register(APIView):
                 return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数无效!'})
 
 
+def getRandom():
+    nums = string.digits
+    verify_code = random.choices(nums, k=6)
+    return verify_code
+
+
 class PhoneVerify(APIView):
     """
     模拟手机验证码
@@ -61,36 +67,68 @@ class PhoneVerify(APIView):
     def post(self, request):
         params = request.data
         user_mobile = params.get('user_mobile')
+        # source=0:注册
+        source = '1' if (params.get('source')) is None else params.get('source')
         if user_mobile is None or not user_mobile.strip():
             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
         else:
-            nums = string.digits
-            verify_code = random.choices(nums, k=6)
-            return Response(
-                {'code': HttpCode.HTTP_SUCCESS, 'message': '验证码已发送,请注意查收!' + user_mobile,
-                 'data': "".join(verify_code)}
-            )
+            try:
+                if source != '0':
+                    UserTable.objects.get(user_mobile=user_mobile)
+                return Response(
+                    {'code': HttpCode.HTTP_SUCCESS, 'message': '验证码已发送,请注意查收!' + user_mobile,
+                     'data': "".join(getRandom())}
+                )
+            except:
+                return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
+
+
+
 
 
 class Login(APIView):
     """
     登陆
+    使用用户名或者手机号均可进行登录
     """
 
     def post(self, request, format=None):
         params = request.data
-        user_name = params.get('user_name')
-        user_pwd = params.get('user_pwd')
+        user_name = parse.unquote(params.get('user_name'))
+        user_pwd = parse.unquote(params.get('user_pwd'))
         if user_name is None or user_pwd is None:
             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
         else:
-            user = UserTable.objects.filter(user_name=user_name, user_pwd=user_pwd)
+            user = UserTable.objects.filter(Q(Q(user_name=user_name) | Q(user_mobile=user_name)) & Q(user_pwd=user_pwd))
             if user.count() != 0:
                 return Response(
                     {'code': HttpCode.HTTP_SUCCESS, 'message': '登录成功',
                      'data': UserSerializers(user.first(), many=False, ).data})
             else:
                 return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
+
+
+class Reset(APIView):
+    """
+    重置密码
+    """
+
+    def post(self, request):
+        params = request.data
+        user_mobile = parse.unquote(params.get('user_mobile'))
+        user_pwd = parse.unquote(params.get('user_pwd'))
+        print(f'mobile={user_mobile},pwd={user_pwd}')
+        if user_mobile is None or user_pwd is None:
+            return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
+        try:
+            user = UserTable.objects.get(user_mobile=user_mobile)
+            user.user_pwd = user_pwd
+            res = user.save(force_update=True)
+            return Response(
+                {'code': HttpCode.HTTP_SUCCESS, 'message': '修改成功',
+                 'data': f'修改成功{res}'})
+        except:
+            return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '用户不存在!'})
 
 
 class MessageInfo(APIView):
@@ -198,7 +236,7 @@ class CardGoodsManager(APIView):
         try:
             user = UserTable.objects.get(user_mobile=user_mobile)
             result = user.cardgoods_set.extra(where=['id IN ( ' + ids_str_list + ' )']).delete()
-            message = f'删除【{ result[0]}】条成功' if result[0] != 0 else '信息不存在!'
+            message = f'删除【{result[0]}】条成功' if result[0] != 0 else '信息不存在!'
             code = HttpCode.HTTP_SUCCESS if result[0] != 0 else HttpCode.HTTP_DATA_NULL
             return Response({'code': code, 'message': message, 'data': message})
         except Exception as e:
