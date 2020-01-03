@@ -83,9 +83,6 @@ class PhoneVerify(APIView):
                 return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
 
 
-
-
-
 class Login(APIView):
     """
     登陆

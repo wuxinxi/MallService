@@ -17,7 +17,7 @@ class UserTable(models.Model):
     user_name = models.CharField(max_length=45, verbose_name='用户名', )
     user_pwd = models.CharField(max_length=45, verbose_name='密码')
     user_mobile = models.CharField(max_length=45, verbose_name='手机号')
-    user_icon = models.CharField(max_length=45, verbose_name='头像', null=True, blank=True)
+    user_icon = models.ImageField(upload_to='image/user/', verbose_name='头像', null=True, blank=True)
     user_real_name = models.CharField(max_length=45, verbose_name='真实姓名', null=True, blank=True)
     user_identity_card = models.CharField(max_length=45, verbose_name='身份证', null=True, blank=True)
     user_nick_name = models.CharField(max_length=45, verbose_name='昵称', null=True, blank=True)
@@ -63,7 +63,7 @@ class Category(models.Model):
     """
     category_name = models.CharField(max_length=45, verbose_name="名称")
     category_content = models.CharField(max_length=255, verbose_name="分类描述", null=True, blank=True)
-    category_icon = models.CharField(max_length=255, verbose_name="分类图片", null=True, blank=True)
+    category_icon = models.ImageField(upload_to='image/category/', verbose_name="分类图片", null=True, blank=True)
 
     class Meta:
         verbose_name = '商品分类表'
@@ -77,7 +77,7 @@ class GoodsBanner(models.Model):
     """
     商品信息轮播图
     """
-    url = models.CharField(max_length=255, verbose_name='轮播图')
+    url = models.ImageField(upload_to='image/goods/', verbose_name='轮播图')
 
     class Meta:
         verbose_name = '商品信息轮播图表'
@@ -110,7 +110,7 @@ class GoodsInfo(models.Model):
     banner = models.ManyToManyField(GoodsBanner, verbose_name='轮播图')
     sku = models.ManyToManyField(GoodsSku, verbose_name='商品属性')
     goods_desc = models.CharField(max_length=255, verbose_name='商品描述')
-    goods_default_icon = models.CharField(max_length=255, null=True, blank=True, verbose_name='商品图片')
+    goods_default_icon = models.ImageField(upload_to='image/goods/', null=True, blank=True, verbose_name='商品图片')
     goods_default_price = models.SmallIntegerField(verbose_name='商品默认单价')
     goods_detail_one = models.CharField(max_length=255, null=True, blank=True, verbose_name='商品描述1')
     goods_detail_two = models.CharField(max_length=255, null=True, blank=True, verbose_name='商品描述2')
@@ -132,7 +132,7 @@ class MessageInfo(models.Model):
     消息表
     """
     userTable = models.ManyToManyField(UserTable, verbose_name='用户信息')
-    msg_icon = models.CharField(max_length=255, null=True, blank=True, verbose_name='消息图片')
+    msg_icon = models.ImageField(upload_to='image/message/', null=True, blank=True, verbose_name='消息图片')
     msg_title = models.CharField(max_length=45, verbose_name='消息标题')
     msg_content = models.CharField(max_length=255, verbose_name='消息内容')
     msg_time = models.DateTimeField(auto_now_add=True, verbose_name='消息时间')
