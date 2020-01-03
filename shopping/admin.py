@@ -3,59 +3,24 @@ from django.contrib import admin
 # Register your models here.
 
 from shopping.models import UserTable, CardGoods, Category, GoodsInfo, \
-    GoodsSku, MessageInfo, OrderGoods, OrderInfo, ShipAddress,GoodsBanner
+    GoodsSku, MessageInfo, OrderGoods, OrderInfo, ShipAddress,GoodsBanner,VersionManager
 
 admin.site.site_header = '商品管理系统'
 admin.site.site_title = '个人商品管理系统'
 
 
-class UserAdmin(admin.ModelAdmin):
+class CommonAdmin(admin.ModelAdmin):
     pass
 
 
-class CardGoodsAdmin(admin.ModelAdmin):
-    pass
-
-
-class CategoryAdmin(admin.ModelAdmin):
-    pass
-
-
-class GoodsInfoAdmin(admin.ModelAdmin):
-    pass
-
-
-class GoodsSkuAdmin(admin.ModelAdmin):
-    pass
-
-
-class MessageInfoAdmin(admin.ModelAdmin):
-    pass
-
-
-class OrderGoodsAdmin(admin.ModelAdmin):
-    pass
-
-
-class OrderInfoAdmin(admin.ModelAdmin):
-    pass
-
-
-class ShipAddressAdmin(admin.ModelAdmin):
-    pass
-
-
-class BannerAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(UserTable, UserAdmin)
-admin.site.register(CardGoods, CardGoodsAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(GoodsInfo, GoodsInfoAdmin)
-admin.site.register(GoodsSku, GoodsSkuAdmin)
-admin.site.register(MessageInfo, MessageInfoAdmin)
-admin.site.register(OrderGoods, OrderGoodsAdmin)
-admin.site.register(OrderInfo, OrderInfoAdmin)
-admin.site.register(ShipAddress, ShipAddressAdmin)
-admin.site.register(GoodsBanner, BannerAdmin)
+admin.site.register(UserTable, CommonAdmin)
+admin.site.register(CardGoods, CommonAdmin)
+admin.site.register(Category, CommonAdmin)
+admin.site.register(GoodsInfo, CommonAdmin)
+admin.site.register(GoodsSku, CommonAdmin)
+admin.site.register(MessageInfo, CommonAdmin)
+admin.site.register(OrderGoods, CommonAdmin)
+admin.site.register(OrderInfo, CommonAdmin)
+admin.site.register(ShipAddress, CommonAdmin)
+admin.site.register(GoodsBanner, CommonAdmin)
+admin.site.register(VersionManager, CommonAdmin)

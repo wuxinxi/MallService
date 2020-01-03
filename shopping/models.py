@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
+from shopping.ext.FilterFileField import FilterFileField
 
 
 # Create your models here.
@@ -34,6 +37,12 @@ class UserTable(models.Model):
 
     def __str__(self):
         return self.user_name
+
+
+# 删除数据库记录时同时删除响应的文件
+@receiver(pre_delete, sender=UserTable)
+def UserTable_delete_invalid(sender, instance, **kwargs):
+    instance.user_icon.delete(False)
 
 
 class CardGoods(models.Model):
@@ -73,6 +82,11 @@ class Category(models.Model):
         return f'{self.category_name}-{self.id}'
 
 
+@receiver(pre_delete, sender=Category)
+def Category_delete_invalid(sender, instance, **kwargs):
+    instance.category_content.delete(False)
+
+
 class GoodsBanner(models.Model):
     """
     商品信息轮播图
@@ -85,6 +99,11 @@ class GoodsBanner(models.Model):
 
     def __str__(self):
         return ("轮播图%s" % self.id)
+
+
+@receiver(pre_delete, sender=GoodsBanner)
+def GoodsBanner_delete_invalid(sender, instance, **kwargs):
+    instance.url.delete(False)
 
 
 class GoodsSku(models.Model):
@@ -127,6 +146,11 @@ class GoodsInfo(models.Model):
         return f'{self.goods_desc}-{self.id}'
 
 
+@receiver(pre_delete, sender=GoodsInfo)
+def GoodsInfo_delete_invalid(sender, instance, **kwargs):
+    instance.goods_default_icon.delete(False)
+
+
 class MessageInfo(models.Model):
     """
     消息表
@@ -143,6 +167,11 @@ class MessageInfo(models.Model):
 
     def __str__(self):
         return self.msg_title
+
+
+@receiver(pre_delete, sender=MessageInfo)
+def MessageInfo_delete_invalid(sender, instance, **kwargs):
+    instance.msg_icon.delete(False)
 
 
 class OrderGoods(models.Model):
@@ -220,3 +249,27 @@ class ShipAddress(models.Model):
 
     def __str__(self):
         return f'{self.id}-{self.ship_user_name}'
+
+
+class VersionManager(models.Model):
+    updateType = [
+        (True, '强制更新'),
+        (False, '手动更新'),
+    ]
+    version_code = models.SmallIntegerField(null=True, blank=True, verbose_name='版本号')
+    version_name = models.CharField(max_length=25, null=True, blank=True, verbose_name='版本名')
+    apk_file = FilterFileField(content_types=['application/vnd.android.package-archive',], max_upload_size=5242880, upload_to="apk/", verbose_name='应用程序')
+    force = models.BooleanField(default=False, choices=updateType, verbose_name='更新方式')
+    invalid_date = models.DateField(verbose_name='有效期')
+
+    class Meta:
+        verbose_name = '版本管理表'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f'{self.id}-{self.version_name}'
+
+
+@receiver(pre_delete, sender=VersionManager)
+def VersionManager_delete_invalid(sender, instance, **kwargs):
+    instance.apk_file.delete(False)
