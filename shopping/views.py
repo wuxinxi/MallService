@@ -53,6 +53,33 @@ class Register(APIView):
                 return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数无效!'})
 
 
+class PerfectPersonalInfo(APIView):
+    """
+    完善个人信息
+    """
+
+    def post(self, request):
+        params = request.data
+        user_name = parse.unquote(params.get('user_name'))
+        user_mobile = params.get('user_mobile')
+
+        if user_name is None or user_mobile is None:
+            return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
+
+        if user_mobile is None:
+            return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
+        else:
+            user = UserTable.objects.filter(user_mobile=user_mobile).first()
+            print(user)
+            res = SaveUserSerializers(data=params, instance=user)
+            if res.is_valid(raise_exception=True):
+                res.save()
+                return Response({'code': HttpCode.HTTP_SUCCESS, 'message': '修改成功!',
+                                 'data': res.data})
+            else:
+                return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '修改失败!'})
+
+
 def getRandom():
     nums = string.digits
     verify_code = random.choices(nums, k=6)
