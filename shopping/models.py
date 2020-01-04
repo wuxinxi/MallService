@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from shopping.ext.FilterFileField import FilterFileField
@@ -8,6 +9,7 @@ from shopping.ext.FilterFileField import FilterFileField
 # 数据库
 
 
+#继承Django自带的userModel类的父类。为了使用自带的Token验证系统
 class UserTable(models.Model):
     """
     用户表
@@ -17,7 +19,7 @@ class UserTable(models.Model):
         (1, '男'),
         (2, '女'),
     ]
-    user_name = models.CharField(max_length=45, verbose_name='用户名', )
+    user_name = models.CharField(max_length=45, verbose_name='用户名' )
     user_pwd = models.CharField(max_length=45, verbose_name='密码')
     user_mobile = models.CharField(max_length=45, verbose_name='手机号')
     user_icon = models.ImageField(upload_to='image/user/', verbose_name='头像', null=True, blank=True)
@@ -258,7 +260,8 @@ class VersionManager(models.Model):
     ]
     version_code = models.SmallIntegerField(null=True, blank=True, verbose_name='版本号')
     version_name = models.CharField(max_length=25, null=True, blank=True, verbose_name='版本名')
-    apk_file = FilterFileField(content_types=['application/vnd.android.package-archive',], max_upload_size=5242880, upload_to="apk/", verbose_name='应用程序')
+    apk_file = FilterFileField(content_types=['application/vnd.android.package-archive', ], max_upload_size=5242880,
+                               upload_to="apk/", verbose_name='应用程序')
     force = models.BooleanField(default=False, choices=updateType, verbose_name='更新方式')
     invalid_date = models.DateField(verbose_name='有效期')
 

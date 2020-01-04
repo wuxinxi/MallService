@@ -37,11 +37,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'shopping.apps.ShoppingConfig',
     'rest_framework',  # 设置rest
+    'rest_framework.authtoken',
 ]
 
+
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'shopping.response.custom_exception_handler.custom_exception_handler'
+    # 'DEFAULT_AUTHENTICATION_CLASSES': ['shopping.ext.auth.ExpiringTokenAuthentication', ],  # 自定义Token拦截
+
+    'EXCEPTION_HANDLER': 'shopping.ext.custom_exception_handler.custom_exception_handler',  # 自定义异常处理
+
 }
+
+# 声明自定义的UserModel
+# 踩坑：注意不是shopping.models.UserTable 必须是app.class
+# AUTH_USER_MODEL = 'shopping.UserTable'
+#
+# AUTHENTICATION_BACKENDS = (
+#     'shopping.views.ShoppingBackend',
+# )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

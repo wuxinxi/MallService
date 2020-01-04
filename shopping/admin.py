@@ -5,6 +5,8 @@ from django.contrib import admin
 from shopping.models import UserTable, CardGoods, Category, GoodsInfo, \
     GoodsSku, MessageInfo, OrderGoods, OrderInfo, ShipAddress,GoodsBanner,VersionManager
 
+from rest_framework.authtoken.models import Token
+
 admin.site.site_header = '商品管理系统'
 admin.site.site_title = '个人商品管理系统'
 

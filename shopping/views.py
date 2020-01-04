@@ -15,7 +15,9 @@ from shopping.serializers.category_serializers import CategorySerializers
 from shopping.serializers.goods_info_serializes import GoodsInfoSerializes
 from shopping.serializers.address_serializers import ShipAddressSerializers
 from shopping.models import UserTable, MessageInfo, CardGoods, Category, GoodsInfo, ShipAddress
+from shopping.ext.backend import ShoppingBackend
 import random, string, time
+from rest_framework.authtoken.models import Token
 import traceback
 import json
 
@@ -28,7 +30,6 @@ class Register(APIView):
     """
     注册
     """
-
     def post(self, request, format=None):
         params = request.data
         user_name = parse.unquote(params.get('user_name'))
@@ -39,7 +40,7 @@ class Register(APIView):
             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
         else:
             user = SaveUserSerializers(data=params)
-            if user.is_valid():
+            if user.is_valid(raise_exception=True):
                 # 使用Q对象可进行&、|操作
                 # 如果用户名或者手机号已被注册
                 res = UserTable.objects.filter(Q(user_name=user_name) | Q(user_mobile=user_mobile))
@@ -109,6 +110,41 @@ class PhoneVerify(APIView):
             except:
                 return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
 
+from django.contrib.auth import authenticate
+from django.contrib.auth.backends import ModelBackend
+class ShoppingBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        try:
+            # 用户名或者手机号均可登录
+            user = UserTable.objects.get(Q(Q(user_name=username) | Q(user_mobile=username)) & Q(user_pwd=password))
+            return user
+        except:
+            return None
+
+#
+# class Login(APIView):
+#     """
+#     登陆
+#     使用用户名或者手机号均可进行登录
+#     """
+#
+#     # authentication_classes = []
+#     def post(self, request, format=None):
+#
+#         params = request.data
+#         user_name = parse.unquote(params.get('user_name'))
+#         user_pwd = parse.unquote(params.get('user_pwd'))
+#         if user_name is None or user_pwd is None:
+#             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
+#         else:
+#             user = authenticate(user_name=user_name, password=user_pwd)
+#             if user is not None:
+#                 return Response(
+#                     {'code': HttpCode.HTTP_SUCCESS, 'message': '登录成功',
+#                      'data': UserSerializers(user, many=False, ).data})
+#             else:
+#                 return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
+
 
 class Login(APIView):
     """
@@ -116,18 +152,22 @@ class Login(APIView):
     使用用户名或者手机号均可进行登录
     """
 
+    # authentication_classes = []
     def post(self, request, format=None):
+
         params = request.data
         user_name = parse.unquote(params.get('user_name'))
         user_pwd = parse.unquote(params.get('user_pwd'))
         if user_name is None or user_pwd is None:
             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
         else:
-            user = UserTable.objects.filter(Q(Q(user_name=user_name) | Q(user_mobile=user_name)) & Q(user_pwd=user_pwd))
-            if user.count() != 0:
+            user_list = UserTable.objects.filter(
+                Q(Q(user_name=user_name) | Q(user_mobile=user_name)) & Q(user_pwd=user_pwd))
+            if user_list.count() != 0:
+                user = user_list.first()
                 return Response(
                     {'code': HttpCode.HTTP_SUCCESS, 'message': '登录成功',
-                     'data': UserSerializers(user.first(), many=False, ).data})
+                     'data': UserSerializers(user, many=False, ).data})
             else:
                 return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
 
