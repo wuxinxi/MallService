@@ -22,4 +22,5 @@ urlpatterns = [
     path('common/getGoodsInfoList', sp.GoodInfoList.as_view()),
     path('userCenter/getShipAddress', sp.ShipAddressList.as_view()),
     path('userCenter/shipAddressManage', sp.ShipAddressManage.as_view()),
+    path('shop/banner', sp.BannerList.as_view()),
 ]

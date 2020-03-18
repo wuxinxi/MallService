@@ -12,9 +12,9 @@ from shopping.serializers.user_serializers import UserSerializers, SaveUserSeria
 from shopping.serializers.message_serializers import MessageSerializers
 from shopping.serializers.card_goods_serializes import CardGoodsSerializers
 from shopping.serializers.category_serializers import CategorySerializers
-from shopping.serializers.goods_info_serializes import GoodsInfoSerializes
+from shopping.serializers.goods_info_serializes import GoodsInfoSerializes, GoodsBannerSerializers
 from shopping.serializers.address_serializers import ShipAddressSerializers
-from shopping.models import UserTable, MessageInfo, CardGoods, Category, GoodsInfo, ShipAddress
+from shopping.models import UserTable, MessageInfo, CardGoods, Category, GoodsInfo, ShipAddress, GoodsBanner
 from shopping.ext.backend import ShoppingBackend
 import random, string, time
 from rest_framework.authtoken.models import Token
@@ -30,6 +30,7 @@ class Register(APIView):
     """
     注册
     """
+
     def post(self, request, format=None):
         params = request.data
         user_name = parse.unquote(params.get('user_name'))
@@ -110,8 +111,11 @@ class PhoneVerify(APIView):
             except:
                 return Response({'code': HttpCode.HTTP_DATA_NULL, 'message': '用户不存在!'})
 
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.backends import ModelBackend
+
+
 class ShoppingBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
@@ -120,6 +124,7 @@ class ShoppingBackend(ModelBackend):
             return user
         except:
             return None
+
 
 #
 # class Login(APIView):
@@ -343,6 +348,15 @@ class GoodInfoList(APIView):
             return Response(
                 {'code': HttpCode.HTTP_SUCCESS, 'message': "成功",
                  'data': GoodsInfoSerializes(goods_info_list, many=True).data})
+
+
+class BannerList(APIView):
+    def get(self, request):
+        list = GoodsBanner.objects.all()
+        time.sleep(5)
+        return  Response(
+                {'code': HttpCode.HTTP_SUCCESS, 'message': "成功",
+                 'data': GoodsBannerSerializers(list, many=True).data})
 
 
 class ShipAddressList(APIView):
