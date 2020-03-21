@@ -32,7 +32,9 @@ class Register(APIView):
     """
 
     def post(self, request, format=None):
+        print('注册')
         params = request.data
+        print(params)
         user_name = parse.unquote(params.get('user_name'))
         user_pwd = parse.unquote(params.get('user_pwd'))
         user_mobile = params.get('user_mobile')
@@ -61,9 +63,12 @@ class PerfectPersonalInfo(APIView):
     """
 
     def post(self, request):
+        print('完善个人资料')
         params = request.data
         user_name = parse.unquote(params.get('user_name'))
         user_mobile = params.get('user_mobile')
+
+        print(user_name+','+user_mobile)
 
         if user_name is None or user_mobile is None:
             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
@@ -159,10 +164,12 @@ class Login(APIView):
 
     # authentication_classes = []
     def post(self, request, format=None):
-
+        print('登录')
         params = request.data
         user_name = parse.unquote(params.get('user_name'))
         user_pwd = parse.unquote(params.get('user_pwd'))
+        print('userName='+user_name+",pwd="+user_pwd)
+
         if user_name is None or user_pwd is None:
             return Response({'code': HttpCode.HTTP_INVALID_PARAMS, 'message': '参数缺省!'})
         else:

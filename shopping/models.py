@@ -260,7 +260,7 @@ class VersionManager(models.Model):
     ]
     version_code = models.SmallIntegerField(null=True, blank=True, verbose_name='版本号')
     version_name = models.CharField(max_length=25, null=True, blank=True, verbose_name='版本名')
-    apk_file = FilterFileField(content_types=['application/vnd.android.package-archive', ], max_upload_size=5242880,
+    apk_file = FilterFileField(content_types=['application/vnd.android.package-archive', ], max_upload_size=52428800,
                                upload_to="apk/", verbose_name='应用程序')
     force = models.BooleanField(default=False, choices=updateType, verbose_name='更新方式')
     invalid_date = models.DateField(verbose_name='有效期')

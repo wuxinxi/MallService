@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['shopping.ext.auth.ExpiringTokenAuthentication', ],  # 自定义Token拦截
 
-    'EXCEPTION_HANDLER': 'shopping.ext.custom_exception_handler.custom_exception_handler',  # 自定义异常处理
+    # 'EXCEPTION_HANDLER': 'shopping.ext.custom_exception_handler.custom_exception_handler',  # 自定义异常处理
 
 }
 
